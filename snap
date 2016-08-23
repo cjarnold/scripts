@@ -1,0 +1,54 @@
+#!/bin/bash
+
+c=/opt/msys/ecelerity/bin/ec_console
+
+header() {
+  echo -e "\n$1:\n"
+}
+
+header "top by memory"
+top -a -b -n1 | head -30
+
+header "disk"
+df -h
+
+header "iostat"
+iostat -cdxt 2 2
+
+header "mpstat"
+mpstat -P ALL 2 2
+
+header "sar"
+sar
+
+header "paniclog"
+tail -50 /var/log/ecelerity/paniclog.ec
+
+header "httplog"
+tail -50 /var/log/ecelerity/httplog.ec
+
+header "/var/log/messages"
+sudo tail -50 /var/log/messages
+
+header "version"
+echo "version" | sudo -u ecuser $c
+
+header "summary"
+echo "summary" | sudo -u ecuser $c
+
+header "threads stats"
+echo "threads stats" | sudo -u ecuser $c
+
+header "memory"
+echo "memory" | sudo -u ecuser $c
+
+header "rabbitmq"
+sudo /opt/msys/3rdParty/sbin/rabbitmqctl list_queues
+
+if [[ $1 == "gstack" ]]; then
+  header "gstack"
+  sudo -u root gstack `pidof ecelerity`
+fi
+
+echo ""
+echo "snap complete"
