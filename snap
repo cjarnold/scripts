@@ -3,52 +3,70 @@
 c=/opt/msys/ecelerity/bin/ec_console
 
 header() {
-  echo -e "\n$1:\n"
+  echo -e "\n$1:\n" >> $log
+  echo "[Getting $1]"
 }
 
+export TZ="America/New_York"
+date_str=$(date +"%Y%m%d-%H:%M:%S")
+
+mkdir -p $HOME/snap_logs
+log="$HOME/snap_logs/snap-${date_str}.log"
+touch $log
+
+symlink="$HOME/snap_logs/latest.log"
+ln -s -f $log $symlink
+
+echo "Logging to $symlink"
+
+header "hostname"
+hostname -f >> $log
+
 header "top by memory"
-top -a -b -n1 | head -30
+top -a -b -n1 | head -30 >> $log
 
 header "disk"
-df -h
+df -h >> $log
 
 header "iostat"
-iostat -cdxt 2 2
+iostat -cdxt 2 2 >> $log
 
 header "mpstat"
-mpstat -P ALL 2 2
+mpstat -P ALL 2 2 >> $log
 
 header "sar"
-sar
+sar >> $log
 
 header "paniclog"
-tail -50 /var/log/ecelerity/paniclog.ec
+tail -50 /var/log/ecelerity/paniclog.ec >> $log
 
 header "httplog"
-tail -50 /var/log/ecelerity/httplog.ec
+tail -50 /var/log/ecelerity/httplog.ec >> $log
 
 header "/var/log/messages"
-sudo tail -50 /var/log/messages
+sudo tail -50 /var/log/messages >> $log
 
 header "version"
-echo "version" | sudo -u ecuser $c
+echo "version" | sudo -u ecuser $c >> $log
 
 header "summary"
-echo "summary" | sudo -u ecuser $c
+echo "summary" | sudo -u ecuser $c >> $log
 
 header "threads stats"
-echo "threads stats" | sudo -u ecuser $c
+echo "threads stats" | sudo -u ecuser $c >> $log
 
 header "memory"
-echo "memory" | sudo -u ecuser $c
+echo "memory" | sudo -u ecuser $c >> $log
 
 header "rabbitmq"
-sudo /opt/msys/3rdParty/sbin/rabbitmqctl list_queues
+sudo /opt/msys/3rdParty/sbin/rabbitmqctl list_queues >> $log
 
 if [[ $1 == "gstack" ]]; then
   header "gstack"
-  sudo -u root gstack `pidof ecelerity`
+  sudo -u root gstack `pidof ecelerity` >> $log
 fi
 
-echo ""
+echo "" >> $log
+echo "snap complete" >> $log
 echo "snap complete"
+echo "see $symlink"
