@@ -23,7 +23,7 @@ header "hostname"
 hostname -f >> $log
 
 header "memory"
-free -b | perl -0 -ne 'if (/Mem:\s+(\d+).+buffers\/cache:\s+(\d+)\s+(\d+)/s) { my $c = 1024**3; my $pct_free = ($3/$1)*100.0; printf("capacity: %.1f GB\nused: %.2f GB (%.1f%)\nfree: %.1f GB (%.1f%)\n", $1/$c, $2/$c, ($2/$1)*100.0, $3/$c, ($3/$1)*100.0); }'
+free -b | perl -0 -ne 'if (/Mem:\s+(\d+).+buffers\/cache:\s+(\d+)\s+(\d+)/s) { my $c = 1024**3; my $pct_free = ($3/$1)*100.0; printf("capacity: %.1f GB\nused: %.2f GB (%.1f%)\nfree: %.1f GB (%.1f%)\n", $1/$c, $2/$c, ($2/$1)*100.0, $3/$c, ($3/$1)*100.0); }' >> $log
 
 header "top by memory"
 top -a -b -n1 | head -30 >> $log
