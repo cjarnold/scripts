@@ -7,11 +7,11 @@ header() {
   echo "[Getting $1]"
 }
 
-export TZ="America/New_York"
-date_str=$(date +"%Y%m%d-%H:%M:%S")
+export TZ="UTC"
+filename_date_str=$(date +"%Y%m%d-%H-%M-%S-UTC")
 
 mkdir -p $HOME/snap_logs
-log="$HOME/snap_logs/snap-${date_str}.log"
+log="$HOME/snap_logs/snap-${filename_date_str}.log"
 touch $log
 
 symlink="$HOME/snap_logs/latest.log"
@@ -21,6 +21,13 @@ echo "Logging to $symlink"
 
 header "hostname"
 hostname -f >> $log
+
+header "time"
+date +'%s' >> $log
+export TZ="UTC"
+date >> $log
+export TZ="America/New_York"
+date >> $log
 
 header "memory"
 free -b | perl -0 -ne 'if (/Mem:\s+(\d+).+buffers\/cache:\s+(\d+)\s+(\d+)/s) { my $c = 1024**3; my $pct_free = ($3/$1)*100.0; printf("capacity: %.1f GB\nused: %.2f GB (%.1f%)\nfree: %.1f GB (%.1f%)\n", $1/$c, $2/$c, ($2/$1)*100.0, $3/$c, ($3/$1)*100.0); }' >> $log
@@ -58,15 +65,15 @@ echo "summary" | sudo -u ecuser $c >> $log
 header "threads stats"
 echo "threads stats" | sudo -u ecuser $c >> $log
 
+header "scriptlet threads stats"
+echo "scriptlet threads stats" | sudo -u ecuser $c >> $log
+
 header "ecelerity memory"
 echo "memory" | sudo -u ecuser $c >> $log
 
-header "rabbitmq"
-sudo /opt/msys/3rdParty/sbin/rabbitmqctl list_queues >> $log
-
 if [[ $1 == "gstack" ]]; then
   header "gstack"
-  sudo -u root gstack `pidof ecelerity` >> $log
+  sudo /opt/msys/ecelerity/bin/gstack_ecelerity -q >> $log
 fi
 
 echo "" >> $log
