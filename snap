@@ -38,14 +38,14 @@ top -a -b -n1 | head -30 >> $log
 header "disk"
 df -h >> $log
 
-header "iostat"
-iostat -cdxt 2 2 >> $log
+#header "iostat"
+#iostat -cdxt 2 2 >> $log
 
-header "mpstat"
-mpstat -P ALL 2 2 >> $log
+#header "mpstat"
+#mpstat -P ALL 2 2 >> $log
 
-header "sar"
-sar >> $log
+#header "sar"
+#sar >> $log
 
 header "paniclog"
 tail -50 /var/log/ecelerity/paniclog.ec >> $log
@@ -53,14 +53,14 @@ tail -50 /var/log/ecelerity/paniclog.ec >> $log
 header "httplog"
 tail -50 /var/log/ecelerity/httplog.ec >> $log
 
-header "/var/log/messages"
-sudo tail -50 /var/log/messages >> $log
+#header "/var/log/messages"
+#sudo tail -50 /var/log/messages >> $log
 
-header "version"
-echo "version" | sudo -u ecuser $c >> $log
+#header "version"
+#echo "version" | sudo -u ecuser $c >> $log
 
-header "summary"
-echo "summary" | sudo -u ecuser $c >> $log
+#header "summary"
+#echo "summary" | sudo -u ecuser $c >> $log
 
 header "threads stats"
 echo "threads stats" | sudo -u ecuser $c >> $log
